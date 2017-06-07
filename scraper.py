@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 import re
+import pymongo
 
 url = 'http://www.cbe.org.eg/en/EconomicResearch/Statistics/Pages/OfficialRatesListing.aspx'
 res = requests.get(url)
@@ -28,5 +29,15 @@ for n, i in enumerate(table.findAll('tr')):
             "sell" : j[2].text
             }
         results.append(data)
-print(results)
+#print(results)
 
+# database
+client = pymongo.MongoClient()
+db = client.scraper
+
+db.info.insert({"data": results})
+
+# retrive data from db
+all_data = db.info.find()
+for d in all_data:
+    print(d)
